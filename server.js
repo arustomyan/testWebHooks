@@ -83,6 +83,11 @@ app.post("/gitlab-push-commit", (req, res) => {
   res.status(200).send("Webhook received successfully");
 });
 
+const STATUS_MR = {
+  close: "Закрыт",
+  open: "Открыт",
+};
+
 app.post("/gitlab-create-mr", (req, res) => {
   // Валидация подписи (если установлен секретный токен)
   const signature = req.headers["x-gitlab-token"];
@@ -112,7 +117,7 @@ app.post("/gitlab-create-mr", (req, res) => {
   console.log({
     from: "v.arustomyan1996@gmail.com",
     to: `${taskId}@placebo25.planfix.ru`,
-    subject: `Создан MR: ${titleMR}`,
+    subject: `${STATUS_MR[mock.object_attributes.action]} MR: ${titleMR}`,
     text: `
         Автор: ${nameAuthor}
         Ветка: ${branchName}
