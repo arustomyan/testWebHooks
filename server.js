@@ -117,7 +117,7 @@ app.post("/gitlab-create-mr", (req, res) => {
   console.log({
     from: "v.arustomyan1996@gmail.com",
     to: `${taskId}@placebo25.planfix.ru`,
-    subject: `${STATUS_MR[mock.object_attributes.action]} MR: ${titleMR}`,
+    subject: `${STATUS_MR[payload.object_attributes.action]} MR: ${titleMR}`,
     text: `
         Автор: ${nameAuthor}
         Ветка: ${branchName}
