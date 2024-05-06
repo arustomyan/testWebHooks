@@ -13,14 +13,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const mailOptions = (currentBranch, lastCommit) => ({
-  from: "v.arustomyan1996@gmail.com",
-  to: "task+3607@placebo25.planfix.ru",
-  subject: `Ветка: ${currentBranch}`,
-  text: `Коммит: 
-  ${lastCommit}`,
-});
-
 // Логирование подключения
 app.use((req, res, next) => {
   console.log(`Incoming request method: ${req.method}, URL: ${req.url}`);
@@ -50,14 +42,30 @@ app.post("/gitlab-push-commit", (req, res) => {
   // Обработка полученных данных
   console.log("Received webhook payload:", payload);
 
-  payload.commits.forEach((element) => {
-    transporter.sendMail(mailOptions(payload.ref, element.message), function (error, info) {
-      if (error) {
-        console.error("Error:", error);
-      } else {
-        console.log("Email sent:", info.response);
-      }
-    });
+  const taskId = payload.ref.split("/")[2];
+
+  payload.commits.forEach((commit) => {
+    transporter.sendMail(
+      {
+        from: "v.arustomyan1996@gmail.com",
+        to: `${taskId}@placebo25.planfix.ru`,
+        subject: `Ветка: ${payload.ref.split("/").slice(2).join("/")}`,
+        text: `
+        Автор: ${payload.user_name}
+        Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
+        Cсылка: ${commit.url}
+        Коммит:
+        ${commit.message} `,
+      },
+
+      function (error, info) {
+        if (error) {
+          console.error("Error:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      },
+    );
   });
 
   // Отправка ответа
