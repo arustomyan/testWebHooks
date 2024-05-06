@@ -42,13 +42,13 @@ app.post("/gitlab-push-commit", (req, res) => {
   // Обработка полученных данных
   console.log("Received webhook payload:", payload);
 
-  const taskId = payload.ref.split("/")[2];
+  const taskId = payload.ref.split("/")[3];
 
   payload.commits.forEach((commit) => {
     console.log({
       from: "v.arustomyan1996@gmail.com",
       to: `${taskId}@placebo25.planfix.ru`,
-      subject: `Ветка: ${payload.ref.split("/").slice(2).join("/")}`,
+      subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
       text: `
         Автор: ${payload.user_name}
         Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
@@ -60,7 +60,7 @@ app.post("/gitlab-push-commit", (req, res) => {
       {
         from: "v.arustomyan1996@gmail.com",
         to: `${taskId}@placebo25.planfix.ru`,
-        subject: `Ветка: ${payload.ref.split("/").slice(2).join("/")}`,
+        subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
         text: `
         Автор: ${payload.user_name}
         Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
