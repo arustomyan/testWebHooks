@@ -45,6 +45,17 @@ app.post("/gitlab-push-commit", (req, res) => {
   const taskId = payload.ref.split("/")[2];
 
   payload.commits.forEach((commit) => {
+    console.log({
+      from: "v.arustomyan1996@gmail.com",
+      to: `${taskId}@placebo25.planfix.ru`,
+      subject: `Ветка: ${payload.ref.split("/").slice(2).join("/")}`,
+      text: `
+        Автор: ${payload.user_name}
+        Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
+        Cсылка: ${commit.url}
+        Коммит:
+        ${commit.message} `,
+    });
     transporter.sendMail(
       {
         from: "v.arustomyan1996@gmail.com",
