@@ -134,40 +134,6 @@ app.post("/gitlab-create-mr", (req, res) => {
       console.log("Email sent:", info.response);
     }
   });
-  // payload.commits.forEach((commit) => {
-  //   console.log({
-  //     from: "v.arustomyan1996@gmail.com",
-  //     to: `${taskId}@placebo25.planfix.ru`,
-  //     subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
-  //     text: `
-  //       Автор: ${payload.user_name}
-  //       Дата: ${new Date(commit.timestamp).toLocaleString()}
-  //       Cсылка: ${commit.url}
-  //       Коммит:
-  //       ${commit.message} `,
-  //   });
-  //   transporter.sendMail(
-  //     {
-  //       from: "v.arustomyan1996@gmail.com",
-  //       to: `${taskId}@placebo25.planfix.ru`,
-  //       subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
-  //       text: `
-  //       Автор: ${payload.user_name}
-  //       Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
-  //       Cсылка: ${commit.url}
-  //       Коммит:
-  //       ${commit.message} `,
-  //     },
-
-  //     function (error, info) {
-  //       if (error) {
-  //         console.error("Error:", error);
-  //       } else {
-  //         console.log("Email sent:", info.response);
-  //       }
-  //     }
-  //   );
-  // });
 
   // Отправка ответа
   res.status(200).send("Webhook received successfully");
@@ -176,6 +142,13 @@ app.post("/gitlab-create-mr", (req, res) => {
 // Обработчик для всех остальных запросов
 app.use((req, res) => {
   res.status(404).send("Not found");
+});
+
+app.post("/any", (req, res) => {
+  console.log(req.body);
+
+  // Отправка ответа
+  res.status(200).send("Webhook received successfully");
 });
 
 // Запуск сервера
