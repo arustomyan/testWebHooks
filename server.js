@@ -51,7 +51,7 @@ app.post("/gitlab-push-commit", (req, res) => {
       subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
       text: `
         Автор: ${payload.user_name}
-        Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
+        Дата: ${new Date(commit.timestamp).toLocaleString()}
         Cсылка: ${commit.url}
         Коммит:
         ${commit.message} `,
@@ -75,9 +75,69 @@ app.post("/gitlab-push-commit", (req, res) => {
         } else {
           console.log("Email sent:", info.response);
         }
-      },
+      }
     );
   });
+
+  // Отправка ответа
+  res.status(200).send("Webhook received successfully");
+});
+
+app.post("/gitlab-create-mr", (req, res) => {
+  // Валидация подписи (если установлен секретный токен)
+  const signature = req.headers["x-gitlab-token"];
+  if (SECRET_TOKEN && signature !== SECRET_TOKEN) {
+    console.error("Invalid token");
+    return res.status(401).send("Invalid token");
+  }
+
+  // Парсинг JSON из тела запроса
+  const payload = req.body;
+
+  if (!payload) {
+    console.error("Empty payload");
+    return res.status(400).send("Empty payload");
+  }
+
+  // Обработка полученных данных
+  console.log("Received webhook payload:", payload);
+
+  const taskId = payload.ref.split("/")[3];
+
+  // payload.commits.forEach((commit) => {
+  //   console.log({
+  //     from: "v.arustomyan1996@gmail.com",
+  //     to: `${taskId}@placebo25.planfix.ru`,
+  //     subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
+  //     text: `
+  //       Автор: ${payload.user_name}
+  //       Дата: ${new Date(commit.timestamp).toLocaleString()}
+  //       Cсылка: ${commit.url}
+  //       Коммит:
+  //       ${commit.message} `,
+  //   });
+  //   transporter.sendMail(
+  //     {
+  //       from: "v.arustomyan1996@gmail.com",
+  //       to: `${taskId}@placebo25.planfix.ru`,
+  //       subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
+  //       text: `
+  //       Автор: ${payload.user_name}
+  //       Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
+  //       Cсылка: ${commit.url}
+  //       Коммит:
+  //       ${commit.message} `,
+  //     },
+
+  //     function (error, info) {
+  //       if (error) {
+  //         console.error("Error:", error);
+  //       } else {
+  //         console.log("Email sent:", info.response);
+  //       }
+  //     }
+  //   );
+  // });
 
   // Отправка ответа
   res.status(200).send("Webhook received successfully");
