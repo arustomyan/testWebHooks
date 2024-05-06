@@ -114,7 +114,7 @@ app.post("/gitlab-create-mr", (req, res) => {
   const titleMR = payload.object_attributes.title;
   const date = new Date(payload.object_attributes.created_at);
 
-  console.log({
+  const message = {
     from: "v.arustomyan1996@gmail.com",
     to: `${taskId}@placebo25.planfix.ru`,
     subject: `${STATUS_MR[payload.object_attributes.action]} MR: ${titleMR}`,
@@ -123,28 +123,17 @@ app.post("/gitlab-create-mr", (req, res) => {
         Ветка: ${branchName}
         Дата: ${new Date(date).toLocaleString()}
         Cсылка: ${payload.object_attributes.url} `,
-  });
+  };
 
-  transporter.sendMail(
-    {
-      from: "v.arustomyan1996@gmail.com",
-      to: `${taskId}@placebo25.planfix.ru`,
-      subject: `Создан MR: ${titleMR}`,
-      text: `
-        Автор: ${nameAuthor}
-        Ветка: ${branchName}
-        Дата: ${new Date(date).toLocaleString()}
-        Cсылка: ${payload.object_attributes.url} `,
-    },
+  console.log(message);
 
-    function (error, info) {
-      if (error) {
-        console.error("Error:", error);
-      } else {
-        console.log("Email sent:", info.response);
-      }
+  transporter.sendMail(message, function (error, info) {
+    if (error) {
+      console.error("Error:", error);
+    } else {
+      console.log("Email sent:", info.response);
     }
-  );
+  });
   // payload.commits.forEach((commit) => {
   //   console.log({
   //     from: "v.arustomyan1996@gmail.com",
