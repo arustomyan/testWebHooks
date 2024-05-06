@@ -129,8 +129,9 @@ app.post("/gitlab-create-mr", (req, res) => {
         Автор: ${nameAuthor}
         Ветка: ${branchName}
         Дата: ${new Date(date).toLocaleString()}
-        Cсылка: ${payload.url} `,
+        Cсылка: ${payload.object_attributes.url} `,
     },
+
     function (error, info) {
       if (error) {
         console.error("Error:", error);
