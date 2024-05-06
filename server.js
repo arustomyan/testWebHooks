@@ -103,12 +103,22 @@ app.post("/gitlab-create-mr", (req, res) => {
   console.log("Received webhook payload:", payload);
 
   const nameAuthor = payload.user.name;
-
   const branchName = payload.object_attributes.source_branch;
   const taskId = payload.object_attributes.source_branch.split("/")[1];
   const targetBranch = payload.object_attributes.target_branch;
   const titleMR = payload.object_attributes.title;
   const date = new Date(payload.object_attributes.created_at);
+
+  console.log({
+    from: "v.arustomyan1996@gmail.com",
+    to: `${taskId}@placebo25.planfix.ru`,
+    subject: `Создан MR: ${titleMR}`,
+    text: `
+        Автор: ${nameAuthor}
+        Ветка: ${branchName}
+        Дата: ${new Date(date).toLocaleString()}
+        Cсылка: ${payload.url} `,
+  });
 
   transporter.sendMail(
     {
