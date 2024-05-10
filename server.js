@@ -145,7 +145,7 @@ app.use((req, res) => {
 });
 
 app.post("/any", (req, res) => {
-  console.log(req.body);
+  console.log(req);
 
   // Отправка ответа
   res.status(200).send("Webhook received successfully");
