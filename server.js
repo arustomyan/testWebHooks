@@ -22,6 +22,12 @@ app.use((req, res, next) => {
 // Парсинг тела запроса в формате JSON
 app.use(bodyParser.json());
 
+function extractTaskNumber(str) {
+  const regex = /task\+(\d+)/;
+  const match = str.match(regex);
+  return match ? match[1] : null;
+}
+
 // Обработчик для POST-запросов на /gitlab-webhook
 app.post("/gitlab-push-commit", (req, res) => {
   // Валидация подписи (если установлен секретный токен)
@@ -42,13 +48,13 @@ app.post("/gitlab-push-commit", (req, res) => {
   // Обработка полученных данных
   console.log("Received webhook payload:", payload);
 
-  const taskId = payload.ref.split("/")[3];
+  const taskId = extractTaskNumber(payload.ref);
 
   payload.commits.forEach((commit) => {
     console.log({
       from: "v.arustomyan1996@gmail.com",
-      to: `${taskId}@placebo25.planfix.ru`,
-      subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
+      to: `task+${taskId}@placebo25.planfix.ru`,
+      subject: `Ветка: ${payload.ref}`,
       text: `
         Автор: ${payload.user_name}
         Дата: ${new Date(commit.timestamp).toLocaleString()}
@@ -59,8 +65,8 @@ app.post("/gitlab-push-commit", (req, res) => {
     transporter.sendMail(
       {
         from: "v.arustomyan1996@gmail.com",
-        to: `${taskId}@placebo25.planfix.ru`,
-        subject: `Ветка: ${payload.ref.split("/").slice(3).join("/")}`,
+        to: `task+${taskId}@placebo25.planfix.ru`,
+        subject: `Ветка: ${payload.ref}`,
         text: `
         Автор: ${payload.user_name}
         Дата: ${new Date("2024-05-07T01:34:11+03:00").toLocaleString()}
@@ -109,15 +115,18 @@ app.post("/gitlab-create-mr", (req, res) => {
 
   const nameAuthor = payload.user.name;
   const branchName = payload.object_attributes.source_branch;
-  const taskId = payload.object_attributes.source_branch.split("/")[1];
+  const taskId = extractTaskNumber(payload.object_attributes.source_branch);
   const targetBranch = payload.object_attributes.target_branch;
   const titleMR = payload.object_attributes.title;
   const date = new Date(payload.object_attributes.created_at);
 
   const message = {
     from: "v.arustomyan1996@gmail.com",
-    to: `${taskId}@placebo25.planfix.ru`,
-    subject: `${STATUS_MR[payload.object_attributes.action]} MR: ${titleMR}`,
+    to: `task+${taskId}@placebo25.planfix.ru`,
+    subject: `${
+      STATUS_MR[payload.object_attributes.action] ||
+      payload.object_attributes.action
+    } MR: ${titleMR}`,
     text: `
         Автор: ${nameAuthor}
         Ветка: ${branchName}
